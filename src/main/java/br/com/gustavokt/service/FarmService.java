@@ -1,4 +1,4 @@
 package br.com.gustavokt.service;
 
-public class FazendaService {
+public class FarmService {
 }
