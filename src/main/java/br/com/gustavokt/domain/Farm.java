@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Builder
 @Value
-public class Fazenda {
+public class Farm {
     Integer id;
     String name;
     int values;

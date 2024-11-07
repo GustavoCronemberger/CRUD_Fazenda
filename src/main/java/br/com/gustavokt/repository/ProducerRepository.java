@@ -33,7 +33,7 @@ public class ProducerRepository {
     }
 
     private static PreparedStatement createPreparedStatementFindByName(Connection conn, String name) throws SQLException {
-        String sql = "SELECT * FROM fazenda_catalog.producer where name like ?;";
+        String sql = "SELECT * FROM farm_catalog.producer where name like ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, String.format("%%%s%%", name));
         return ps;
@@ -50,7 +50,7 @@ public class ProducerRepository {
     }
 
     private static PreparedStatement createPreparedStatementDelete(Connection conn, Integer id) throws SQLException {
-        String sql = "DELETE FROM `fazenda_catalog`.`producer` WHERE (`id` = ?);";
+        String sql = "DELETE FROM `farm_catalog`.`producer` WHERE (`id` = ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, id);
         return ps;
@@ -67,7 +67,7 @@ public class ProducerRepository {
     }
 
     private static PreparedStatement createPreparedStatementSave (Connection conn, Producer producer) throws SQLException {
-        String sql = "INSERT INTO `fazenda_catalog`.`producer` (`name`) VALUES (?);";
+        String sql = "INSERT INTO `farm_catalog`.`producer` (`name`) VALUES (?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, producer.getName());
         return ps;
@@ -87,7 +87,7 @@ public class ProducerRepository {
     }
 
     private static PreparedStatement createPreparedStatementFindById (Connection conn, Integer id) throws SQLException {
-        String sql = "SELECT * FROM fazenda_catalog.producer where id = ?;";
+        String sql = "SELECT * FROM farm_catalog.producer where id = ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, id);
         return ps;
@@ -105,7 +105,7 @@ public class ProducerRepository {
     }
 
     private static PreparedStatement createPreparedStatementUpdate (Connection conn, Producer producer) throws SQLException {
-        String sql = "UPDATE `fazenda_catalog`.`producer` SET `name` = ? WHERE (`id` = ?);";
+        String sql = "UPDATE `farm_catalog`.`producer` SET `name` = ? WHERE (`id` = ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, producer.getName());
         ps.setInt(2, producer.getId());
