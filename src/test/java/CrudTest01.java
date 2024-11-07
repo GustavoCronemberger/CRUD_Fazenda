@@ -1,4 +1,4 @@
-import br.com.gustavokt.service.FazendaService;
+import br.com.gustavokt.service.FarmService;
 import br.com.gustavokt.service.ProducerService;
 
 import java.util.Scanner;
@@ -19,19 +19,19 @@ public class CrudTest01 {
                     ProducerService.menu(op);
                 }
                 case 2 -> {
-                    fazendaMenu();
+                    farmMenu();
                     op = Integer.parseInt(SCANNER.nextLine());
-                    FazendaService.menu(op);
+                    FarmService.menu(op);
                 }
             }
-            FazendaService.menu(op);
+            FarmService.menu(op);
         }
     }
 
     private static void menu() {
         System.out.println("Type the number of your operation");
         System.out.println("1. Producer");
-        System.out.println("2. Fazenda");
+        System.out.println("2. Farm");
         System.out.println("0. Exit");
     }
 
@@ -44,12 +44,12 @@ public class CrudTest01 {
         System.out.println("9. Go Back");
     }
 
-    private static void fazendaMenu() {
+    private static void farmMenu() {
         System.out.println("Type the number of your operation");
-        System.out.println("1. Search for fazenda");
-        System.out.println("2. Delete fazenda");
-        System.out.println("3. Save fazenda");
-        System.out.println("4. Update fazenda");
+        System.out.println("1. Search for farm");
+        System.out.println("2. Delete farm");
+        System.out.println("3. Save farm");
+        System.out.println("4. Update farm");
         System.out.println("9. Go Back");
     }
 }
