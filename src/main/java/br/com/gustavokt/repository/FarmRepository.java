@@ -64,7 +64,7 @@ public class FarmRepository {
     }
 
     private static PreparedStatement createPreparedStatementDelete(Connection conn, Integer id) throws SQLException {
-        String sql = "DELETE FROM `farm_catalog`.`farm` WHERE (`id` = ?);";
+        String sql = "DELETE FROM farm_catalog.farm WHERE (id = ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, id);
         return ps;
@@ -81,7 +81,7 @@ public class FarmRepository {
     }
 
     private static PreparedStatement createPreparedStatementSave (Connection conn, Farm farm) throws SQLException {
-        String sql = "INSERT INTO `farm_catalog`.`farm` (`name`, `values`, `producer_id`) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO farm_catalog.farm (name, values, producer_id) VALUES (?, ?, ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, farm.getName());
         ps.setInt(2, farm.getValues());
@@ -135,7 +135,7 @@ public class FarmRepository {
     }
 
     private static PreparedStatement createPreparedStatementUpdate (Connection conn, Farm farm) throws SQLException {
-        String sql = "UPDATE `farm_catalog`.`farm` SET `name` = ?, `values` = ? WHERE (`id` = ?);";
+        String sql = "UPDATE farm_catalog.farm SET name = ?, values = ? WHERE (id = ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, farm.getName());
         ps.setInt(2, farm.getValues());
