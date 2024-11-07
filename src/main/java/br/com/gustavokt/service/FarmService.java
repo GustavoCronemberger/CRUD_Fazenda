@@ -1,13 +1,13 @@
 package br.com.gustavokt.service;
 
-import br.com.gustavokt.domain.Fazenda;
+import br.com.gustavokt.domain.Farm;
 import br.com.gustavokt.domain.Producer;
-import br.com.gustavokt.repository.FazendaRepository;
+import br.com.gustavokt.repository.FarmRepository;
 
 import java.util.Optional;
 import java.util.Scanner;
 
-public class FazendaService {
+public class FarmService {
     private static final Scanner SCANNER = new Scanner(System.in);
 
     public static void menu(int op) {
@@ -22,49 +22,49 @@ public class FazendaService {
     private static void findByName() {
         System.out.println("Type the name or empty to all");
         String name = SCANNER.nextLine();
-        FazendaRepository.findByName(name)
+        FarmRepository.findByName(name)
                 .forEach(p -> {
                     System.out.printf("[%d] - %s $d %s%n", p.getId(), p.getName(), p.getValues(), p.getProducer().getName());
                 });
     }
 
     public static void delete() {
-        System.out.println("Type the id of the Fazenda you want to delete");
+        System.out.println("Type the id of the Farm you want to delete");
         findByName();
         int id = Integer.parseInt(SCANNER.nextLine());
         System.out.println("Are you sure? Y/N");
         String choice = SCANNER.nextLine();
         if ("y".equalsIgnoreCase(choice)) {
-            FazendaRepository.delete(id);
+            FarmRepository.delete(id);
         }
 
     }
 
     public static void save() {
-        System.out.println("Type the name of the Fazenda to be saved");
+        System.out.println("Type the name of the Farm to be saved");
         String name = SCANNER.nextLine();
         System.out.println("Type the number of values");
         int values = Integer.parseInt(SCANNER.nextLine());
         System.out.println("Type the id of the producer");
         Integer producerId = Integer.parseInt(SCANNER.nextLine());
-        Fazenda fazenda = Fazenda.builder()
+        Farm farm = Farm.builder()
                 .name(name)
                 .values(values)
                 .producer(Producer.builder().id(producerId).build())
                 .build();
-        FazendaRepository.save(fazenda);
+        FarmRepository.save(farm);
 
     }
 
     private static void update() {
         System.out.println("Type the id of the object you want to update");
-        Optional<Fazenda> producerOptional = FazendaRepository.findById(Integer.parseInt(SCANNER.nextLine()));
+        Optional<Farm> producerOptional = FarmRepository.findById(Integer.parseInt(SCANNER.nextLine()));
         if (producerOptional.isEmpty()) {
-            System.out.println("Fazenda not found");
+            System.out.println("Farm not found");
             return;
         }
-        Fazenda producerFromDb = producerOptional.get();
-        System.out.println("Fazenda Found" + producerFromDb);
+        Farm producerFromDb = producerOptional.get();
+        System.out.println("Farm Found" + producerFromDb);
         System.out.println("Type the new name or enter to keep the same");
         String name = SCANNER.nextLine();
         name = name.isEmpty() ? producerFromDb.getName() : name;
@@ -73,12 +73,13 @@ public class FazendaService {
         int values = Integer.parseInt(SCANNER.nextLine());
         name = name.isEmpty() ? producerFromDb.getName() : name;
 
-        Fazenda producerToUpdate = Fazenda.builder()
+        Farm producerToUpdate = Farm.builder()
                 .id(producerFromDb.getId())
                 .values(values)
                 .producer(producerFromDb.getProducer())
                 .name(name)
                 .build();
-        FazendaRepository.update(producerToUpdate);
+        FarmRepository.update(producerToUpdate);
     }
+
 }
