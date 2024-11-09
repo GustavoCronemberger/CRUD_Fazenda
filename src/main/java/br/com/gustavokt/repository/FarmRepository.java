@@ -6,10 +6,7 @@ import br.com.gustavokt.domain.Producer;
 import lombok.extern.log4j.Log4j2;
 
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -64,28 +61,47 @@ public class FarmRepository {
     }
 
     private static PreparedStatement createPreparedStatementDelete(Connection conn, Integer id) throws SQLException {
-        String sql = "DELETE FROM `farm_catalog`.`farm` WHERE (`id` = ?);";
+        String sql = "DELETE FROM farm_catalog.farm WHERE (id = ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, id);
         return ps;
     }
 
-    public static void save (Farm farm){
+    public static void save(Farm farm) {
         log.info("Saving Farm '{}'", farm);
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = createPreparedStatementSave(conn, farm)) {
-            ps.execute();
-        }catch (SQLException e){
+
+            int affectedRows = ps.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating farm failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    farm = Farm.builder()
+                            .id(generatedKeys.getInt(1))
+                            .name(farm.getName())
+                            .values(farm.getValues())
+                            .producer(farm.getProducer())
+                            .build();
+                    log.info("Farm saved with ID '{}'", farm.getId());
+                } else {
+                    throw new SQLException("Creating farm failed, no ID obtained.");
+                }
+            }
+        } catch (SQLException e) {
             log.error("Error while trying to save Farm '{}'", farm.getId(), e);
         }
     }
 
-    private static PreparedStatement createPreparedStatementSave (Connection conn, Farm farm) throws SQLException {
-        String sql = "INSERT INTO `farm_catalog`.`farm` (`name`, `values`, `producer_id`) VALUES (?, ?, ?);";
-        PreparedStatement ps = conn.prepareStatement(sql);
+    private static PreparedStatement createPreparedStatementSave(Connection conn, Farm farm) throws SQLException {
+        String sql = "INSERT INTO farm_catalog.farm (name, values, producer_id) VALUES (?, ?, ?);";
+        PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, farm.getName());
         ps.setInt(2, farm.getValues());
-        ps.setInt(3, farm.getId());
+        ps.setInt(3, farm.getProducer().getId());
         return ps;
     }
 
@@ -135,7 +151,7 @@ public class FarmRepository {
     }
 
     private static PreparedStatement createPreparedStatementUpdate (Connection conn, Farm farm) throws SQLException {
-        String sql = "UPDATE `farm_catalog`.`farm` SET `name` = ?, `values` = ? WHERE (`id` = ?);";
+        String sql = "UPDATE farm_catalog.farm SET name = ?, values = ? WHERE (id = ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, farm.getName());
         ps.setInt(2, farm.getValues());

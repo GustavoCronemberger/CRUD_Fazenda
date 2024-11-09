@@ -43,7 +43,7 @@ public class FarmService {
     public static void save() {
         System.out.println("Type the name of the Farm to be saved");
         String name = SCANNER.nextLine();
-        System.out.println("Type the number of values");
+        System.out.println("Type the number of value");
         int values = Integer.parseInt(SCANNER.nextLine());
         System.out.println("Type the id of the producer");
         Integer producerId = Integer.parseInt(SCANNER.nextLine());
