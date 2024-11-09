@@ -9,7 +9,7 @@ public class CrudTest01 {
     public static void main(String[] args) {
         int op;
         while (true) {
-            producerMenu();
+            menu();
             op = Integer.parseInt(SCANNER.nextLine());
             if (op == 0) break;
             switch (op) {
@@ -23,8 +23,9 @@ public class CrudTest01 {
                     op = Integer.parseInt(SCANNER.nextLine());
                     FarmService.menu(op);
                 }
+                default -> System.out.println("Invalid option. Please try again!");
             }
-            FarmService.menu(op);
+           // FarmService.menu(op);
         }
     }
 
