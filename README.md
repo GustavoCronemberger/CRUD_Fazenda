@@ -12,7 +12,6 @@
 7. [Banco de Dados PostgreSQL](#banco-de-dados-postgresql)
 8. [Testes](#testes)
 9. [Operações CRUD](#operações-crud)
-10. [Execução do Projeto](#execução-do-projeto)
 
 ## Introdução
 Este é meu primeiro projeto básico de CRUD (Create, Read, Update, Delete), com o objetivo de treinar o conhecimento obtido em Java. No projeto é possível criar, atualizar, salvar e deletar uma lista de fazendas e produtores (rurais).
