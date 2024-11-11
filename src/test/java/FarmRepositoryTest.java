@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +24,7 @@ public class FarmRepositoryTest {
         connection = ConnectionFactory.getConnection();
         farmRepository = new FarmRepository();
         cleanDatabase();
+        ensureTestProducer();
     }
 
     @AfterEach
@@ -34,6 +36,22 @@ public class FarmRepositoryTest {
         // Clean the database before each test
         try (PreparedStatement ps = connection.prepareStatement("DELETE FROM farm_catalog.farm")) {
             ps.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void ensureTestProducer() {
+        // Check if the test producer exists, and insert it if not
+        try (PreparedStatement ps = connection.prepareStatement("SELECT COUNT(*) FROM farm_catalog.producer WHERE id = 1")) {
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            int count = rs.getInt(1);
+            if (count == 0) {
+                try (PreparedStatement insertPs = connection.prepareStatement("INSERT INTO farm_catalog.producer (id, name) VALUES (1, 'Test Producer')")) {
+                    insertPs.execute();
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -97,6 +115,3 @@ public class FarmRepositoryTest {
         assertEquals(5000, updatedFarm.get().getValues(), "The farm values should be updated");
     }
 }
-
-
-
