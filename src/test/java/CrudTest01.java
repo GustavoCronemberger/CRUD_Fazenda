@@ -25,7 +25,7 @@ public class CrudTest01 {
                 }
                 default -> System.out.println("Invalid option. Please try again!");
             }
-           // FarmService.menu(op);
+            FarmService.menu(op);
         }
     }
 
