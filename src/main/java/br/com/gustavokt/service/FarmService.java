@@ -3,7 +3,9 @@ package br.com.gustavokt.service;
 import br.com.gustavokt.domain.Farm;
 import br.com.gustavokt.domain.Producer;
 import br.com.gustavokt.repository.FarmRepository;
+import br.com.gustavokt.repository.ProducerRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -20,66 +22,94 @@ public class FarmService {
     }
 
     private static void findByName() {
-        System.out.println("Type the name or empty to all");
-        String name = SCANNER.nextLine();
-        FarmRepository.findByName(name)
-                .forEach(p -> {
-                    System.out.printf("[%d] - %s $d %s%n", p.getId(), p.getName(), p.getValues(), p.getProducer().getName());
-                });
+        try {
+            System.out.println("Type the name of the farm");
+            String name = SCANNER.nextLine();
+            List<Farm> farms = FarmRepository.findByName(name);
+            if (farms.isEmpty()) {
+                System.out.println("Farm not found, please try again");
+            } else {
+                farms.forEach(p -> System.out.printf("[%d] - %s %d %s%n", p.getId(), p.getName(), p.getValues(), p.getProducer().getName()));
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred while searching for the farm: " + e.getMessage());
+        }
     }
 
     public static void delete() {
-        System.out.println("Type the id of the Farm you want to delete");
-        findByName();
-        int id = Integer.parseInt(SCANNER.nextLine());
-        System.out.println("Are you sure? Y/N");
-        String choice = SCANNER.nextLine();
-        if ("y".equalsIgnoreCase(choice)) {
-            FarmRepository.delete(id);
+        try {
+            System.out.println("Type the id of the Farm you want to delete");
+            int id = Integer.parseInt(SCANNER.nextLine());
+            System.out.println("Are you sure? Y/N");
+            String choice = SCANNER.nextLine();
+            if ("y".equalsIgnoreCase(choice)) {
+                FarmRepository.delete(id);
+                System.out.println("Farm deleted successfully.");
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred while deleting the farm: " + e.getMessage());
         }
-
     }
 
     public static void save() {
-        System.out.println("Type the name of the Farm to be saved");
-        String name = SCANNER.nextLine();
-        System.out.println("Type the number of value");
-        int values = Integer.parseInt(SCANNER.nextLine());
-        System.out.println("Type the id of the producer");
-        Integer producerId = Integer.parseInt(SCANNER.nextLine());
-        Farm farm = Farm.builder()
-                .name(name)
-                .values(values)
-                .producer(Producer.builder().id(producerId).build())
-                .build();
-        FarmRepository.save(farm);
+        try {
+            System.out.println("Type the name of the Farm to be saved");
+            String farmName = SCANNER.nextLine();
+            System.out.println("Type the number of value");
+            int values = Integer.parseInt(SCANNER.nextLine());
+            System.out.println("Type the id of the producer");
+            int producerId = Integer.parseInt(SCANNER.nextLine());
 
+            Optional<Producer> optionalProducer = ProducerRepository.findById(producerId);
+            Producer producer;
+            if (optionalProducer.isPresent()) {
+                producer = optionalProducer.get();
+            } else {
+                System.out.println("Type the name of the Producer to be saved");
+                String producerName = SCANNER.nextLine();
+                producer = Producer.builder().id(producerId).name(producerName).build();
+                ProducerRepository.save(producer);
+            }
+
+            Farm farm = Farm.builder()
+                    .name(farmName)
+                    .values(values)
+                    .producer(producer)
+                    .build();
+            FarmRepository.save(farm);
+        } catch (Exception e) {
+            System.out.println("An error occurred while saving the farm: " + e.getMessage());
+        }
     }
 
     private static void update() {
-        System.out.println("Type the id of the object you want to update");
-        Optional<Farm> producerOptional = FarmRepository.findById(Integer.parseInt(SCANNER.nextLine()));
-        if (producerOptional.isEmpty()) {
-            System.out.println("Farm not found");
-            return;
+        try {
+            System.out.println("Type the id of the object you want to update");
+            int id = Integer.parseInt(SCANNER.nextLine());
+            Optional<Farm> farmOptional = FarmRepository.findById(id);
+            if (farmOptional.isEmpty()) {
+                System.out.println("Farm not found");
+                return;
+            }
+            Farm farmFromDb = farmOptional.get();
+            System.out.println("Farm Found: " + farmFromDb);
+            System.out.println("Type the new name or enter to keep the same");
+            String name = SCANNER.nextLine();
+            name = name.isEmpty() ? farmFromDb.getName() : name;
+
+            System.out.println("Type the new value or enter to keep the same");
+            int values = Integer.parseInt(SCANNER.nextLine());
+
+            Farm farmToUpdate = Farm.builder()
+                    .id(farmFromDb.getId())
+                    .values(values)
+                    .producer(farmFromDb.getProducer())
+                    .name(name)
+                    .build();
+            FarmRepository.update(farmToUpdate);
+        } catch (Exception e) {
+            System.out.println("An error occurred while updating the farm: " + e.getMessage());
         }
-        Farm producerFromDb = producerOptional.get();
-        System.out.println("Farm Found" + producerFromDb);
-        System.out.println("Type the new name or enter to keep the same");
-        String name = SCANNER.nextLine();
-        name = name.isEmpty() ? producerFromDb.getName() : name;
-
-        System.out.println("Type the new name or enter to keep the same");
-        int values = Integer.parseInt(SCANNER.nextLine());
-        name = name.isEmpty() ? producerFromDb.getName() : name;
-
-        Farm producerToUpdate = Farm.builder()
-                .id(producerFromDb.getId())
-                .values(values)
-                .producer(producerFromDb.getProducer())
-                .name(name)
-                .build();
-        FarmRepository.update(producerToUpdate);
     }
-
 }
+

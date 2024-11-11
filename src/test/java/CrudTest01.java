@@ -13,7 +13,7 @@ public class CrudTest01 {
             op = Integer.parseInt(SCANNER.nextLine());
             if (op == 0) break;
             switch (op) {
-                case 1 ->{
+                case 1 -> {
                     producerMenu();
                     op = Integer.parseInt(SCANNER.nextLine());
                     ProducerService.menu(op);
@@ -25,7 +25,6 @@ public class CrudTest01 {
                 }
                 default -> System.out.println("Invalid option. Please try again!");
             }
-            FarmService.menu(op);
         }
     }
 
