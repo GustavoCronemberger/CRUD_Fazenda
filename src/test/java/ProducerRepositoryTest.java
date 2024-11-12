@@ -30,7 +30,6 @@ public class ProducerRepositoryTest {
     }
 
     private void cleanDatabase() {
-        // Clean the database before each test
         try (PreparedStatement ps1 = connection.prepareStatement("DELETE FROM farm_catalog.farm");
              PreparedStatement ps2 = connection.prepareStatement("DELETE FROM farm_catalog.producer")) {
             ps1.execute();

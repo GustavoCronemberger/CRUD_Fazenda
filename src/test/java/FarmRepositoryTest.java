@@ -33,7 +33,6 @@ public class FarmRepositoryTest {
     }
 
     private void cleanDatabase() {
-        // Clean the database before each test
         try (PreparedStatement ps = connection.prepareStatement("DELETE FROM farm_catalog.farm")) {
             ps.execute();
         } catch (SQLException e) {
@@ -42,7 +41,6 @@ public class FarmRepositoryTest {
     }
 
     private void ensureTestProducer() {
-        // Check if the test producer exists, and insert it if not
         try (PreparedStatement ps = connection.prepareStatement("SELECT COUNT(*) FROM farm_catalog.producer WHERE id = 1")) {
             ResultSet rs = ps.executeQuery();
             rs.next();
