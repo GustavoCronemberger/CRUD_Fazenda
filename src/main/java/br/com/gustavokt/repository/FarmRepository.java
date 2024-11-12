@@ -6,6 +6,7 @@ import br.com.gustavokt.domain.Producer;
 import lombok.extern.log4j.Log4j2;
 
 
+import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class FarmRepository {
 
     private static PreparedStatement createPreparedStatementFindByName(Connection conn, String name) throws SQLException {
         String sql = """
-        SELECT a.id, a.name, a.values, a.producer_id, p.name as 'producer_name' From farm_catalog.farm a inner join
+        SELECT a.id, a.name, a.values, a.producer_id, p.name as producer_name From farm_catalog.farm a inner join
         farm_catalog.producer p on a.producer_id = p.id
         where a.name like ?;
         """;
@@ -80,18 +81,15 @@ public class FarmRepository {
 
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    farm = Farm.builder()
-                            .id(generatedKeys.getInt(1))
-                            .name(farm.getName())
-                            .values(farm.getValues())
-                            .producer(farm.getProducer())
-                            .build();
+                    Field idField = Farm.class.getDeclaredField("id");
+                    idField.setAccessible(true);
+                    idField.set(farm, generatedKeys.getInt(1));
                     log.info("Farm saved with ID '{}'", farm.getId());
                 } else {
                     throw new SQLException("Creating farm failed, no ID obtained.");
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | NoSuchFieldException | IllegalAccessException e) {
             log.error("Error while trying to save Farm '{}'", farm.getId(), e);
         }
     }
@@ -130,7 +128,7 @@ public class FarmRepository {
 
     private static PreparedStatement createPreparedStatementFindById (Connection conn, Integer id) throws SQLException {
         String sql = """
-        SELECT a.id, a.name, a.values, a.producer_id, p.name as 'producer_name' From farm_catalog.farm a inner join
+        SELECT a.id, a.name, a.values, a.producer_id, p.name as producer_name From farm_catalog.farm a inner join
         farm_catalog.producer p on a.producer_id = p.id
         where a.id = ?;
         """;

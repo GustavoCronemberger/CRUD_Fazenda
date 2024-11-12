@@ -27,16 +27,16 @@ public class ProducerService {
     }
 
     public static void delete() {
-        System.out.println("Type the id of the producer you want to delete");
-        findByName();
-        int id = Integer.parseInt(SCANNER.nextLine());
-        System.out.println("Are you sure? Y/N");
-        String choice = SCANNER.nextLine();
-        if ("y".equalsIgnoreCase(choice)) {
-            ProducerRepository.delete(id);
-        }
-
-    }
+        try { System.out.println("Type the id of the producer you want to delete");
+            int id = Integer.parseInt(SCANNER.nextLine());
+            System.out.println("Are you sure? Y/N");
+            String choice = SCANNER.nextLine();
+            if ("y".equalsIgnoreCase(choice)) {
+                ProducerRepository.delete(id);
+                System.out.println("Producer deleted successfully.");
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred while deleting the producer: " + e.getMessage()); } }
 
     public static void save() {
         System.out.println("Type the name of the producer to be saved");

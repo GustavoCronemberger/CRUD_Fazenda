@@ -4,10 +4,8 @@ import br.com.gustavokt.conn.ConnectionFactory;
 import br.com.gustavokt.domain.Producer;
 import lombok.extern.log4j.Log4j2;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.lang.reflect.Field;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +38,7 @@ public class ProducerRepository {
     }
 
     public static void delete(int id) {
+        log.info("Deleting producer '{}'", id);
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = createPreparedStatementDelete(conn, id)) {
             ps.execute();
@@ -50,25 +49,42 @@ public class ProducerRepository {
     }
 
     private static PreparedStatement createPreparedStatementDelete(Connection conn, Integer id) throws SQLException {
-        String sql = "DELETE FROM farm_catalog.producer WHERE (id = ?);";
+        String sql = "DELETE FROM farm_catalog.producer WHERE id = ? AND id NOT IN (SELECT producer_id FROM farm_catalog.farm);";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, id);
         return ps;
     }
 
-    public static void save (Producer producer){
+
+    public static void save(Producer producer) {
         log.info("Saving producer '{}'", producer);
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = createPreparedStatementSave(conn, producer)) {
-            ps.execute();
-        }catch (SQLException e){
-            log.error("Error while trying to save producer '{}'", producer.getId(), e);
+
+            int affectedRows = ps.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating producer failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    Field idField = Producer.class.getDeclaredField("id");
+                    idField.setAccessible(true);
+                    idField.set(producer, generatedKeys.getInt(1));
+                    log.info("Producer saved with ID '{}'", producer.getId());
+                } else {
+                    throw new SQLException("Creating producer failed, no ID obtained.");
+                }
+            }
+        } catch (SQLException | NoSuchFieldException | IllegalAccessException e) {
+            log.error("Error while trying to save Producer '{}'", producer.getId(), e);
         }
     }
 
-    private static PreparedStatement createPreparedStatementSave (Connection conn, Producer producer) throws SQLException {
+    private static PreparedStatement createPreparedStatementSave(Connection conn, Producer producer) throws SQLException {
         String sql = "INSERT INTO farm_catalog.producer (name) VALUES (?);";
-        PreparedStatement ps = conn.prepareStatement(sql);
+        PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         ps.setString(1, producer.getName());
         return ps;
     }
