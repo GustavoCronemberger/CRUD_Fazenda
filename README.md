@@ -11,22 +11,27 @@
 6. [Service](#service)
 7. [Banco de Dados PostgreSQL](#banco-de-dados-postgresql)
 8. [Testes](#testes)
+    - [Testes de Repositório](#testes-de-repositório)
+    - [Testes de Serviço](#testes-de-serviço)
 9. [Operações CRUD](#operações-crud)
 
 ## Introdução
-Este é meu primeiro projeto básico de CRUD (Create, Read, Update, Delete), com o objetivo de treinar o conhecimento obtido em Java. No projeto é possível criar, atualizar, salvar e deletar uma lista de fazendas e produtores (rurais).
+Este é meu primeiro projeto CRUD (Create, Read, Update, Delete), com o objetivo de treinar o conhecimento obtido em Java.<br> 
+No projeto é possível criar, atualizar, salvar e deletar uma lista de fazendas e produtores (rurais), via jdbc com o banco de dados.
 
 ## Tecnologias Utilizadas
 - Java
+- Maven
+- JUnit 5
+- PostgreSQL
 - Lombok
 - Log4j2
-- Maven
-- PostgreSQL
 
 ## Estrutura do Projeto
-O projeto é dividido nas classes Farm e Producer, com repository e service para melhor acesso ao banco de dados e lógica de negócios, inclusive, foi nessa etapa que decidi utilizar a classe Optional, para evitar NullPointerExceptional, deixando o código mais legível e fácil manutenção. 
-Todo o CRUD foi implementado manualmente, utilizando anotações lombok e log4j2 para melhorar as validações e métodos mais básicos das classes. 
-Por fim, temos um teste de integração para testar a funcionalidade do sistema com o banco de dados.
+O projeto é dividido nas classes Farm e Producer, com repository e service para melhor acesso ao banco de dados e lógica de negócios.<br>
+Foi utilizado a classe Optional para evitar NullPointerException, deixando o código mais legível e de fácil manutenção.<br>
+Todo o CRUD foi implementado manualmente, utilizando anotações Lombok e Log4j2 para melhorar as validações e métodos mais básicos das classes.<br>
+Por fim, temos testes unitários e de integração para testar a funcionalidade do sistema com o banco de dados.
 
 ## Classes
 
@@ -61,7 +66,6 @@ CREATE TABLE farm (
     FOREIGN KEY (producer_id) REFERENCES producer(id)
 );
 
-
 CREATE TABLE producer (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
@@ -71,16 +75,14 @@ SELECT f.id AS farm_id, f.name AS farm_name, f.values, p.id AS producer_id, p.na
 FROM farm_catalog.farm f
 JOIN farm_catalog.producer p ON f.producer_id = p.id;
 
-## Teste
-Os testes são realizados para garantir que todas as operações CRUD funcionem corretamente. As principais funcionalidades são testadas para as entidades Farm e Producer de forma integral.
+## Testes
+Os testes são realizados para garantir que todas as operações CRUD funcionem corretamente.<br>
+É possível testar método por método, assim como rodar todos os testes ao mesmo tempo.<br>
+As principais funcionalidades são testadas para as entidades Farm e Producer de forma integral.
 
-## Operações CRUD
-O projeto implementa todas as operações CRUD para as entidades Farm e Producer:
+### Testes de Repositório
+Os testes de repositório verificam as operações de acesso a dados para as entidades Farm e Producer Repository.
 
-- Create: Adição de novas fazendas e produtores
-
-- Read: Leitura de fazendas e produtores existentes
-
-- Update: Atualização de informações de fazendas e produtores
-
-- Delete: Exclusão de fazendas e produtores
+### Testes de Serviço
+Os testes de serviço verificam a lógica de negócios para as operações de CRUD das entidades Farm e Producer Service.<br>
+No projeto, é o CrudTest01, onde é possível rodar localmente junto ao banco de dados criando, salvando, modificando e deletando dados para Farm e Producer.
